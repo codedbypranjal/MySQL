@@ -1,0 +1,54 @@
+CREATE DATABASE godmode_revision
+
+use godmode_revision;
+ create table students (
+    student_id int primary KEY,
+    name varchar(50) not null,
+    age int,
+    email varchar(20),
+    phone_number varchar(10)
+);
+
+create table courses(
+    course_id int primary key,
+    name varchar(20) not null,
+    credit_hour int 
+);
+
+create  table enrollment(
+    enrollment_id int primary key,
+    student_id int,
+    course_id int,
+    foreign Key (course_id) references courses(course_id),
+    foreign Key (student_id) references students(student_id)
+    
+);
+show tables;
+
+insert into students(student_id,name,age,email,phone_number)
+VALUES  (1, 'Alice Smith', 20, 'alice@example.com', '555-0101'),
+        (2, 'Bob Johnson', 22, 'bob@example.com', '555-0102'),
+        (3, 'Charlie Brown', 19, 'charlie@example.com', '555-0103'),
+        (4, 'Diana Prince', 21, 'diana@example.com', '555-0104'),
+        (5, 'Evan Wright', 23, 'evan@example.com', '555-0105');
+
+select * from students; 
+
+#shows only selected
+select name,email from students; 
+
+#compares age:
+select * from students where age>20;
+
+#Starts with: X% (use:like keyword)
+select * from students where name like 'A%';
+
+#anywhere : %x% (like)
+select * from students where name like '%an%';
+
+#sort by descending
+select * from students order by (age) desc;
+
+#Student with exact phone num
+
+select * from students where phone_number='555-0103';
