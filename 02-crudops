@@ -1,0 +1,97 @@
+--Performing CRUD Operations
+--use of ALTER keyword- schema modifications
+
+--add new column:
+#1
+alter table students ADD 
+address varchar(100);
+#2
+alter table students add is_active BOOLEAN DEFAULT true;
+
+--change data feature: keyword:   Modify column
+alter table students modify column address varchar(30);
+
+--rename, drop:
+ALTER Table courses RENAME COLUMN name TO course_name;
+
+alter table students drop column age;
+
+insert into students (student_id,address)
+values
+      (15,'Jhapa'),
+      (16,'Solu');
+
+select * from students
+
+--check if the credit_hour in courses table>=3
+alter table courses
+add constraint chk_credit_hr check (credit_hour>=3);
+
+--UPDATE (Modify existing data)
+-- 7 Simple Update: Alice Smith (student_id = 1) got a new phone number. Write a query to update her phone_number to '555-9999'.
+
+update students set phone_number='5555-9999' where student_id=1; 
+
+--change bob's age to 23 also change his email address
+--firstly lets add an age column
+alter table students 
+add column age INT;
+
+--update table by adding values to existing single column 
+update students set age=21 where student_id=1;
+UPDATE students SET age = 18 WHERE student_id = 2;
+
+UPDATE students SET age = 23 WHERE student_id = 3;
+
+UPDATE students SET age = 19 WHERE student_id = 4;
+
+UPDATE students SET age = 20 WHERE student_id = 5;
+
+update students set age=23 , email='bob.j@gmail.com' where name like 'Bob%';
+
+
+update courses set credit_hour=4 where credit_hour=3;
+
+--Bulk convert all emails to lowecase
+update students set email= LOWER(email);
+
+--update credit hout of data structure to 5 by comparing via name
+update courses set credit_hour=5 where name like 'Data%';
+
+--Delete Ops
+
+--1: delete enrollment of Evan by using student if of him from students table
+DELETE FROM enrollment
+WHERE
+    student_id = (
+        SELECT student_id
+        FROM students
+        WHERE
+            name = 'Evan Wright'
+    );
+-- Simple delete query
+delete from students where name="Evan Wright";
+delete from students where student_id>=12; address
+
+--Delete with condition:
+--delete any course from the course table if the credit_hour is less than 5 chs
+
+delete from courses where credit_hour<5;
+
+
+-- 14 Delete Related Records (Handling Foreign Keys): Charlie Brown (student_id = 3) is dropping out of the university. Write the necessary queries to first remove his enrollments from the enrollment table, and then delete his record from the Students table.
+
+delete from enrollment where student_id=3;
+delete from students where name='Charlie Brown';
+
+
+
+---- 15 Clear a Table: Write a query to delete all records from the enrollment table without deleting the table structure itself.
+delete  from enrollment;
+
+
+
+select * from students;
+select * from enrollment;
+
+select * from courses
