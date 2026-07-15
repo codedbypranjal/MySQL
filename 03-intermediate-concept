@@ -1,22 +1,3 @@
---cntd
-
---Restore enrollment again;
-INSERT INTO enrollment (enrollment_id, course_id, student_id) VALUES
-(1001, 101, 1),
-(1002, 103, 1),
-(1003, 102, 2),
-(1004, 104, 2),
-(1006, 105, 4),
-(1009, 102, 1);
-
-
-
-select * from students;
-select * from enrollment;
-
-select * from courses
-
-
 --AGGREGATE Function
 --Total data count
 select count(*) from students; 
@@ -31,6 +12,82 @@ group by
 course_id;
 
 
+-- 14 Find the total number of courses each student is enrolled in. Display the student_id and the enrollment count.
 select student_id, count(course_id)
 from enrollment
 group by student_id;
+
+-- Insert data to ensure at least one course (102) has more than 2 students enrolled - For Q-15
+insert into enrollment (enrollment_id,course_id,student_id ) values (1010,102,4);
+
+-- 15 List the course_ids of courses that have more than 2 students enrolled (Use HAVING).
+select course_id
+from enrollment
+group by 
+    course_id
+having count(student_id)>2;
+
+ -- 16 Find the student_ids of students who are enrolled in exactly 2 courses.
+select student_id
+from enrollment
+group by 
+    student_id
+having 
+    count(course_id)=2;
+
+-- Table Relations and Joins
+
+-- 17 Write a query to display the name of each student alongside the course_ids they are enrolled in.
+select s.name, e.course_id
+from students as s
+    join enrollment as e ON e.student_id=s.student_id;
+
+
+
+-- FROM students AS s → Start with the students table.
+-- JOIN enrollment AS e → Combine it with the enrollment table.
+-- ON e.student_id = s.student_id → Match rows where the student_id values are equal.
+-- SELECT s.name, e.course_id → Display the student's name and the course they're enrolled in.
+
+
+-- 18 Retrieve the names of students and the names of the courses they are enrolled in
+select s.name, cs.name
+from students as s 
+    join enrollment as e on s.student_id=e.student_id
+    join courses as cs on cs.course_id=e.course_id;
+
+-- 19 List all courses and the number of students enrolled in each. Ensure courses with zero (null) students are also included in the result
+
+select cs.course_id, cs.name, count(e.student_id)
+from courses as cs  
+    left join enrollment as e on e.course_id=cs.course_id
+group by cs.course_id;
+
+--Find names of students who are actively taking 'Database MS'
+select s.name    
+from 
+    students as s  
+    join enrollment as e on e.student_id=s.student_id
+    join courses as cs on cs.course_id=e.course_id
+where 
+    cs.name= 'Database Management Systems';
+
+-- Insert a student who has no enrollment to ensure Q21 has suitable data to select
+insert into students (student_id,name,age,email,phone_number) values (6,'Frank Underwod',22,'frank@example.com','5555-443');
+
+
+-- Identify any students who are not enrolled in any CLASS_ORIGIN
+select *
+from students as s
+    left join enrollment as e on e.student_id=s.student_id
+WHERE 
+    e.course_id is null;
+
+--Calculating  total credit hours each student is currently taking. Display the student's name and their total credit hours.
+
+select s.name, s.student_id, sum(cs.credit_hour) as total_credit_hour
+from students as s  
+    left join enrollment as e on e.student_id=s.student_id
+    left join courses as cs on e.course_id=cs.course_id
+group by 
+    s.student_id
