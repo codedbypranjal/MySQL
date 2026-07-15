@@ -1,0 +1,64 @@
+-- 23 Find the names of students who are enrolled in the course with the highest credit hours
+SELECT s.name
+FROM students s
+JOIN enrollment e ON s.student_id = e.student_id
+JOIN courses c ON e.course_id = c.course_id
+WHERE c.credit_hour = (SELECT MAX(credit_hour) FROM courses);
+
+-- 24 List the courses that have an enrollment count strictly higher than the average enrollment count across all courses.
+SELECT c.course_name, COUNT(e.student_id) AS enrollment_count
+FROM courses c
+LEFT JOIN enrollment e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+HAVING COUNT(e.student_id) > (
+    SELECT AVG(enrollment_count)
+    FROM (
+        SELECT COUNT(student_id) AS enrollment_count
+        FROM enrollment
+        GROUP BY course_id
+    ) AS temp
+);
+
+-- 25 Find the names of students whose age is strictly greater than the average age of all students.
+SELECT name
+FROM students
+WHERE age > (SELECT AVG(age) FROM students);
+
+-- Stored Procedures and DML
+
+-- 26 Write a Stored Procedure named GetStudentCourses that accepts a student_id as an input parameter and returns the names of all courses that specific student is enrolled in.
+DELIMITER //
+
+CREATE PROCEDURE GetStudentCourses(IN p_student_id INT)
+BEGIN
+    SELECT c.course_name
+    FROM courses c
+    JOIN enrollment e ON c.course_id = e.course_id
+    WHERE e.student_id = p_student_id;
+END //
+
+CALL GetStudentCourses(1);
+DELIMITER ;
+
+-- 27 Write a Stored Procedure named EnrollStudent that takes p_student_id and p_course_id as inputs, and inserts a new record into the enrollment table.
+DELIMITER //
+
+CREATE PROCEDURE EnrollStudent(IN p_student_id INT, IN p_course_id INT)
+BEGIN
+    DECLARE new_id INT;
+    SELECT COALESCE(MAX(enrollment_id), 0) + 1 INTO new_id FROM enrollment;
+    
+    INSERT INTO enrollment (enrollment_id, course_id, student_id)
+    VALUES (new_id, p_course_id, p_student_id);
+END //
+
+CALL EnrollStudent(4, 103);
+SELECT * FROM enrollment WHERE student_id = 4;
+
+DELIMITER ;
+
+-- 28 Write an UPDATE statement to increase the credit hours of 'Web Development' by 1.
+UPDATE courses
+SET credit_hour = credit_hour + 1
+WHERE course_name = 'Web Development';
+SELECT * FROM courses WHERE course_name = 'Web Development';
